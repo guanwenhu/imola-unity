@@ -38,7 +38,7 @@ public class NIGUICursorExt : NIGUICursor
 		if (m_rightHand) {
 			color[0] = Color.green;
 		} else {
-			color[1] = Color.blue;
+			color[0] = Color.blue;
 		}
         
         m_texture.SetPixels(color);
