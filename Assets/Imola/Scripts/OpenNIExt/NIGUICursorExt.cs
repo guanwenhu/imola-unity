@@ -31,11 +31,16 @@ public class NIGUICursorExt : NIGUICursor
         m_lastClickFrame = -1;
         m_lastClickPos = Vector2.zero;
         m_lastClickTime = -1.0f;
-        int rectSize=15;
+        int rectSize=30;
         m_positionRect = new Rect(0, 0, rectSize, rectSize);
         m_texture = new Texture2D(1, 1);
         Color[] color = new Color[1];
-        color[0] = Color.green;
+		if (m_rightHand) {
+			color[0] = Color.green;
+		} else {
+			color[1] = Color.blue;
+		}
+        
         m_texture.SetPixels(color);
         m_texture.Apply();
         m_active = true;
@@ -50,7 +55,7 @@ public class NIGUICursorExt : NIGUICursor
     {
         if (m_active == false)
             return false;
-        return m_input.GetAxis("NIGUI_CLICK")>=1.0f;
+		return m_input.GetAxis(GetNIClickString())>=1.0f;
     }
 
 
@@ -80,14 +85,14 @@ public class NIGUICursorExt : NIGUICursor
     /// @param eventDelegate the delegate to be called
     public override void RegisterCallbackForGesture(NIGestureTracker.GestureEventHandler eventDelegate)
     {
-        m_input.RegisterCallbackForGesture(eventDelegate, "NIGUI_CLICK");
+        m_input.RegisterCallbackForGesture(eventDelegate, GetNIClickString());		
     }
 
     /// This method allows us to unregister a callback previously registered using @ref RegisterCallbackForGesture
     /// @param eventDelegate the delegate to be called
     public override void UnRegisterCallbackForGesture(NIGestureTracker.GestureEventHandler eventDelegate)
     {
-        m_input.UnRegisterCallbackForGesture(eventDelegate, "NIGUI_CLICK");
+        m_input.UnRegisterCallbackForGesture(eventDelegate,GetNIClickString());
     }
 
     /// returns the current position
@@ -111,9 +116,11 @@ public class NIGUICursorExt : NIGUICursor
         get 
         {
             Vector2 res = Vector2.zero;
-            // we need to add 0.5 to change the range from -0.5 to 0.5 to a range from 0 to 1.
-            res.x = m_input.GetAxis("NIGUI_X")+0.5f; 
-            res.y = m_input.GetAxis("NIGUI_Y")+0.5f; // the screen y axis is opposite to the camera's
+			// we need to add 0.5 to change the range from -0.5 to 0.5 to a range from 0 to 1.
+            res.x = m_input.GetAxis(GetNIXString())+0.5f; 
+            res.y = m_input.GetAxis(GetNIYString())+0.5f; // the screen y axis is opposite to the camera's
+			
+            
             return res;
         }
     }
@@ -124,7 +131,8 @@ public class NIGUICursorExt : NIGUICursor
         m_active = false;
         if (m_registeredClick)
         {
-            m_input.UnRegisterCallbackForGesture(GestureEventHandler, "NIGUI_CLICK");
+            m_input.UnRegisterCallbackForGesture(GestureEventHandler, GetNIClickString());
+			
             m_registeredClick = false;
         }
     }
@@ -147,12 +155,12 @@ public class NIGUICursorExt : NIGUICursor
 
         if (m_registeredClick == false)
         {
-            m_input.RegisterCallbackForGesture(GestureEventHandler, "NIGUI_CLICK");
+            m_input.RegisterCallbackForGesture(GestureEventHandler, GetNIClickString());
             m_registeredClick = true;
         }
         m_positionRect.x = Position.x - (m_positionRect.width/2);
         m_positionRect.y = Position.y - (m_positionRect.height / 2);
-        float clickVal=m_input.GetAxis("NIGUI_CLICK");
+        float clickVal=m_input.GetAxis(GetNIClickString());
         GUI.depth = 0;
         GUI.Box(m_positionRect, "");
         if (clickVal > 0)
@@ -164,7 +172,43 @@ public class NIGUICursorExt : NIGUICursor
             m_positionRect.width = width;
         }
     }
-
+	
+	private string GetNIXString() 
+	{
+		if (m_rightHand) 
+		{
+			return "NIGUI_X_R";
+		}
+		else 
+		{
+			return "NIGUI_X_L";
+		}
+	}
+	
+	private string GetNIYString() 
+	{
+		if (m_rightHand) 
+		{
+			return "NIGUI_Y_R";
+		}
+		else 
+		{
+			return "NIGUI_Y_L";
+		}
+	}
+	
+	private string GetNIClickString() 
+	{
+		if (m_rightHand) 
+		{
+			return "NIGUI_CLICK_R";
+		}
+		else 
+		{
+			return "NIGUI_CLICK_L";
+		}
+	}
+	
     /// holds the time of the last click (from Time.time)
     protected float m_lastClickTime;
     /// holds the frame of the last click 

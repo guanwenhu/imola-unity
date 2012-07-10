@@ -84,7 +84,7 @@ public class DemoGUI : MonoBehaviour
         myRect.y = (Screen.height / 2) + 20;
         myRect.width = 250;
         myRect.height = 30;
-        GUI.Box(myRect, "value=" + m_input.GetAxis("NIGUI_CLICK"));
+        GUI.Box(myRect, "value=" + m_input.GetAxis("NIGUI_CLICK_R"));
 
 
         
